@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="jame-gam-oct-2026"
+config/name="Ducky Debugging"
 run/main_scene="uid://bab4p2kybglsp"
 config/features=PackedStringArray("4.7")
 config/icon="res://icon.svg"

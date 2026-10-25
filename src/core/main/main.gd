@@ -79,7 +79,10 @@ func load_data() -> void:
 		file.close()
 		
 func connect_to_server() -> void:
-	peer.create_client("ws://localhost:8000")
+	if OS.is_debug_build():
+		peer.create_client("ws://localhost:8000")
+	else:
+		peer.create_client("wss://ducky-debugging.ancoder.net")
 	multiplayer.multiplayer_peer = peer
 	Log.info("Client start")
 
