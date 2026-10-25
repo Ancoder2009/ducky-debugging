@@ -39,14 +39,85 @@ font_size = 36
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tif62"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_0o143"]
+font = ExtResource("3_tif62")
+font_size = 32
+
+[sub_resource type="Animation" id="Animation_tif62"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:offset_transform_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.01, 0.01)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_5fl30"]
+resource_name = "appear"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:offset_transform_scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.01, 0.01), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_yfg2f"]
+_data = {
+&"RESET": SubResource("Animation_tif62"),
+&"appear": SubResource("Animation_5fl30")
+}
+
+[sub_resource type="LabelSettings" id="LabelSettings_80iay"]
+font = ExtResource("3_tif62")
+font_size = 24
+
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_tif62"]
 
-[node name="Main" type="Node2D" unique_id=1104389312 node_paths=PackedStringArray("players", "bugs", "progress_bar", "chat")]
+[node name="Main" type="Node2D" unique_id=1104389312 node_paths=PackedStringArray("players", "bugs", "progress_bar", "chat", "end_anim", "online_counter")]
 script = ExtResource("1_6t2ow")
 players = NodePath("Players")
 bugs = NodePath("Bugs")
 progress_bar = NodePath("UI/Control/VBoxContainer/ProgressBar")
 chat = NodePath("UI/Control/LineEdit")
+end_anim = NodePath("UI/Control/Label/AnimationPlayer")
+online_counter = NodePath("UI/Control/Online")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=270396543]
 replication_config = SubResource("SceneReplicationConfig_tif62")
@@ -117,6 +188,40 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_tif62")
 placeholder_text = "[Enter to chat]"
 max_length = 40
 
+[node name="Label" type="Label" parent="UI/Control" unique_id=1239710013]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -263.5
+offset_top = 176.0
+offset_right = 263.5
+offset_bottom = 279.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(0.01, 0.01)
+text = "All (most) bugs defeated!
+Thank you for playing!
+The programmer submitted the game with 62 seconds left!"
+label_settings = SubResource("LabelSettings_0o143")
+horizontal_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="UI/Control/Label" unique_id=306937342]
+libraries/ = SubResource("AnimationLibrary_yfg2f")
+
+[node name="Online" type="Label" parent="UI/Control" unique_id=443904233]
+layout_mode = 1
+offset_left = 15.0
+offset_top = 10.0
+offset_right = 195.0
+offset_bottom = 33.0
+text = "Players Online: 0"
+label_settings = SubResource("LabelSettings_80iay")
+
 [node name="Players" type="Node" parent="." unique_id=1809134727]
 
 [node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=924064548]
@@ -150,4 +255,10 @@ shape = SubResource("WorldBoundaryShape2D_tif62")
 position = Vector2(0, 1000)
 shape = SubResource("WorldBoundaryShape2D_tif62")
 
+[node name="Line2D" type="Line2D" parent="." unique_id=1921488876]
+points = PackedVector2Array(-1000, 1000, 1000, 1000, 1000, -1000, -1000, -1000)
+closed = true
+
 [connection signal="text_submitted" from="UI/Control/LineEdit" to="." method="_on_line_edit_text_submitted"]
+[connection signal="despawned" from="PlayerSpawner" to="." method="_on_player_changed"]
+[connection signal="spawned" from="PlayerSpawner" to="." method="_on_player_changed"]

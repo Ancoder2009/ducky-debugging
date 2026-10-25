@@ -4,12 +4,22 @@ extends Node
 @export var bugs: Node
 @export var progress_bar: ProgressBar
 @export var chat: LineEdit
+@export var end_anim: AnimationPlayer
+@export var online_counter: Label
 
 const BUG_SPAWN_RANGE: int = 1000
 
-var req_killed: int = 0
+var end: bool = false
+
+var req_killed: int = 2000
 @export var killed: int = 0:
-	set(value): killed = value; progress_bar.value = (float(killed) / 2000) * 100
+	set(value):
+		killed = value; progress_bar.value = (float(killed) / req_killed) * 100
+		save_data()
+		if killed >= req_killed:
+			if end: return
+			end_anim.play("appear")
+			end = true
 
 var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 const port: int = 8000
@@ -44,8 +54,30 @@ func start_server() -> void:
 	)
 	peer.create_server(port)
 	multiplayer.multiplayer_peer = peer
+	load_data()
 	Global.bug_amt_changed.emit(0)
 
+func save_data() -> void:
+	var file: FileAccess = FileAccess.open("user://data.dat", FileAccess.WRITE)
+	
+	if file:
+		file.store_var(killed)
+		file.close()
+		Log.info("Server saved data.")
+	else:
+		Log.warn("Server failed to write save.")
+
+func load_data() -> void:
+	if not FileAccess.file_exists("user://data.dat"):
+		Log.info("No save found")
+		return
+
+	var file: FileAccess = FileAccess.open("user://data.dat", FileAccess.READ)
+	if file:
+		killed = file.get_var()
+		Log.info("Load killed amount: %d" % killed)
+		file.close()
+		
 func connect_to_server() -> void:
 	peer.create_client("ws://localhost:8000")
 	multiplayer.multiplayer_peer = peer
@@ -68,3 +100,7 @@ func _on_line_edit_text_submitted(new_text: String) -> void:
 	
 	chat.text = ""
 	get_viewport().gui_release_focus()
+
+
+func _on_player_changed(node: Node) -> void:
+	online_counter.text = "Players Online: %d" % players.get_child_count()
