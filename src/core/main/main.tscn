@@ -1,6 +1,153 @@
 [gd_scene format=3 uid="uid://bab4p2kybglsp"]
 
 [ext_resource type="Script" uid="uid://cem07vlayo1jy" path="res://src/core/main/main.gd" id="1_6t2ow"]
+[ext_resource type="Shader" uid="uid://dlrke86r5tq0j" path="res://assets/shaders/background.gdshader" id="2_eijcj"]
+[ext_resource type="FontFile" uid="uid://cjg17n4k7se1r" path="res://assets/fonts/BoldPixels.ttf" id="3_tif62"]
 
-[node name="Main" type="Node" unique_id=1437717578]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_tif62"]
+properties/0/path = NodePath(".:killed")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6t2ow"]
+shader = ExtResource("2_eijcj")
+shader_parameter/bottom_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+shader_parameter/top_color = Color(0.1288298, 0.12882978, 0.12882978, 1)
+shader_parameter/wave_amp = 0.050000002375
+shader_parameter/wave_size = 1.7500000356249998
+shader_parameter/wave_time_mul = 0.50000002049012
+shader_parameter/total_phases = 7
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5fl30"]
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+corner_detail = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tif62"]
+bg_color = Color(0.6, 1, 0.4627451, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+corner_detail = 2
+
+[sub_resource type="LabelSettings" id="LabelSettings_h45xw"]
+font = ExtResource("3_tif62")
+font_size = 36
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tif62"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_tif62"]
+
+[node name="Main" type="Node2D" unique_id=1104389312 node_paths=PackedStringArray("players", "bugs", "progress_bar", "chat")]
 script = ExtResource("1_6t2ow")
+players = NodePath("Players")
+bugs = NodePath("Bugs")
+progress_bar = NodePath("UI/Control/VBoxContainer/ProgressBar")
+chat = NodePath("UI/Control/LineEdit")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=270396543]
+replication_config = SubResource("SceneReplicationConfig_tif62")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=1177925330]
+layer = -1
+
+[node name="ColorRect" type="ColorRect" parent="Background" unique_id=1260884848]
+material = SubResource("ShaderMaterial_6t2ow")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1876550021]
+
+[node name="Control" type="Control" parent="UI" unique_id=174210682]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Control" unique_id=665613940]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -288.0
+offset_top = 20.0
+offset_right = 288.0
+offset_bottom = 60.0
+grow_horizontal = 2
+theme_override_constants/separation = 6
+
+[node name="ProgressBar" type="ProgressBar" parent="UI/Control/VBoxContainer" unique_id=1363455719]
+custom_minimum_size = Vector2(576, 35)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_tif62")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/background = SubResource("StyleBoxFlat_5fl30")
+theme_override_styles/fill = SubResource("StyleBoxFlat_tif62")
+
+[node name="Label" type="Label" parent="UI/Control/VBoxContainer" unique_id=1602914942]
+layout_mode = 2
+text = "Bugs Defeated"
+label_settings = SubResource("LabelSettings_h45xw")
+horizontal_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="UI/Control" unique_id=1469218030]
+custom_minimum_size = Vector2(700, 0)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 23.0
+offset_top = -53.0
+offset_right = 91.5
+offset_bottom = -22.0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("3_tif62")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxEmpty_tif62")
+theme_override_styles/read_only = SubResource("StyleBoxEmpty_tif62")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_tif62")
+placeholder_text = "[Enter to chat]"
+max_length = 40
+
+[node name="Players" type="Node" parent="." unique_id=1809134727]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=924064548]
+_spawnable_scenes = PackedStringArray("uid://chm5u0dwpi7yc")
+spawn_path = NodePath("../Players")
+
+[node name="Bugs" type="Node" parent="." unique_id=134864655]
+
+[node name="BugSpawner" type="MultiplayerSpawner" parent="." unique_id=1879630281]
+_spawnable_scenes = PackedStringArray("uid://cr57orxoihmd7")
+spawn_path = NodePath("../Bugs")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=48723905]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=745228170]
+position = Vector2(-1000, 0)
+rotation = 1.5707964
+shape = SubResource("WorldBoundaryShape2D_tif62")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="StaticBody2D" unique_id=555972566]
+position = Vector2(1000, 0)
+rotation = -1.5707964
+shape = SubResource("WorldBoundaryShape2D_tif62")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="StaticBody2D" unique_id=1913342066]
+position = Vector2(0, -1000)
+rotation = 3.1415927
+shape = SubResource("WorldBoundaryShape2D_tif62")
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="StaticBody2D" unique_id=1117128560]
+position = Vector2(0, 1000)
+shape = SubResource("WorldBoundaryShape2D_tif62")
+
+[connection signal="text_submitted" from="UI/Control/LineEdit" to="." method="_on_line_edit_text_submitted"]

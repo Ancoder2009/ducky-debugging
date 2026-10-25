@@ -1,0 +1,142 @@
+[gd_scene format=3 uid="uid://cr57orxoihmd7"]
+
+[ext_resource type="Texture2D" uid="uid://sxgpi11uohh2" path="res://assets/textures/robot buble.png" id="1_4amt7"]
+[ext_resource type="Script" uid="uid://c4ka35ob6ro4x" path="res://src/gameplay/bug/bug.gd" id="1_33ou0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_33ou0"]
+atlas = ExtResource("1_4amt7")
+region = Rect2(0, 0, 62, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sv1wv"]
+atlas = ExtResource("1_4amt7")
+region = Rect2(62, 0, 62, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mjqj8"]
+atlas = ExtResource("1_4amt7")
+region = Rect2(0, 62, 62, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1jx2j"]
+atlas = ExtResource("1_4amt7")
+region = Rect2(62, 62, 62, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d1k0i"]
+atlas = ExtResource("1_4amt7")
+region = Rect2(0, 124, 62, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_isok8"]
+atlas = ExtResource("1_4amt7")
+region = Rect2(62, 124, 62, 62)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_h45xw"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_33ou0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sv1wv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mjqj8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1jx2j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d1k0i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_isok8")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h45xw"]
+size = Vector2(119, 106)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_33ou0"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[sub_resource type="Animation" id="Animation_33ou0"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_mjqj8"]
+resource_name = "despawn"
+length = 0.39999999999999997
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15286437, 0.39999998),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.2, 1.2), Vector2(0.01, 0.01)]
+}
+
+[sub_resource type="Animation" id="Animation_sv1wv"]
+resource_name = "spawn"
+length = 0.39999999999999997
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.24713561, 0.39999998),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0.01, 0.01), Vector2(1.2, 1.2), Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_mjqj8"]
+_data = {
+&"RESET": SubResource("Animation_33ou0"),
+&"despawn": SubResource("Animation_mjqj8"),
+&"spawn": SubResource("Animation_sv1wv")
+}
+
+[node name="Bug" type="Area2D" unique_id=1891245175 node_paths=PackedStringArray("anim")]
+z_index = -11
+z_as_relative = false
+collision_mask = 2
+script = ExtResource("1_33ou0")
+anim = NodePath("AnimationPlayer")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=206402808]
+scale = Vector2(4, 4)
+sprite_frames = SubResource("SpriteFrames_h45xw")
+autoplay = "default"
+frame_progress = 0.4155145
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2003654349]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_h45xw")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=264579538]
+replication_config = SubResource("SceneReplicationConfig_33ou0")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=516523667]
+libraries/ = SubResource("AnimationLibrary_mjqj8")
+autoplay = &"spawn"
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
